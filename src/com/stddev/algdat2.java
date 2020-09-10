@@ -265,7 +265,6 @@ public class algdat2 {
             System.out.println("Stack Overflow Error");
         }
 
-
     }
 }
 
