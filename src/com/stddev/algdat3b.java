@@ -1,8 +1,9 @@
-package com.stddev;
+//package com.stddev;
 
-public class algdat3b {
+/*public class algdat3b {
     public static void main(String[] args) {
         BinaryTree words = BinaryTree.createBinaryTree(args);
+        // it will print the tree from left to right
         words.print2D(words.root);
     }
 }
@@ -21,15 +22,15 @@ class Node {
     public String toString() {
         return word;
     }
-
-
 }
 
+//  Class for binary trees, sorts words alphabetically in the order of ASCII ext table
+//  Starting with the root as the first word
 class BinaryTree {
     static final int COUNT = 10;
-
     Node root;
 
+    //retrieved from geeks for geeks
     public void add(String word) {
         root = addRecursive(root, word);
     }
@@ -93,5 +94,5 @@ class BinaryTree {
         print2DUtil(root, 0);
     }
 }
-
+*/
 
