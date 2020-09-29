@@ -6,23 +6,23 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ * Finds strongly connected components on specified graph using Kosaraju's algorithm
+ */
 public class algdat5 {
+    //Driver code
     public static void main(String[] args) throws IOException {
-        TextFileHandler L7g6_file = new TextFileHandler("graphs/L7g6.txt");
-        ArrayList<int[]> L7g6_edges = L7g6_file.getIntArray();
-        Graph L7g6_graph = new Graph(L7g6_edges.get(0)[0]);
-
-        for (int i = 1; i < L7g6_edges.size(); i++) {
-            L7g6_graph.addEdge(L7g6_edges.get(i)[0],L7g6_edges.get(i)[1]);
+        //Change name on path
+        String path = "graphs/L7g6.txt";
+        TextFileHandler graph_file = new TextFileHandler(path);
+        ArrayList<int[]> graph_edges = graph_file.getIntArray();
+        Graph graph = new Graph(graph_edges.get(0)[0]);
+        for (int i = 1; i < graph_edges.size(); i++) {
+            graph.addEdge(graph_edges.get(i)[0],graph_edges.get(i)[1]);
         }
-
-        L7g6_graph.DFS(7);
-
-
-        System.out.println(L7g6_graph.toString());
-        System.out.println(L7g6_graph.getVisited());
-        System.out.println(L7g6_graph.getFinishStack());
-
+        graph.stronglyConnectedComponents();
+        System.out.println("File: "+ graph_file.getFile().getName());
+        System.out.println(graph.getStronglyCC());
     }
 }
 
@@ -39,6 +39,10 @@ class TextFileHandler {
         file = new File(path);
         stringArray = new ArrayList<>();
         this.fill();
+    }
+
+    public File getFile() {
+        return file;
     }
 
     public ArrayList<String[]> getStringArray() {
@@ -58,7 +62,7 @@ class TextFileHandler {
         BufferedReader br = new BufferedReader(new FileReader(file));
         String line;
         while ((line = br.readLine()) != null) {
-            stringArray.add(line.split(" "));
+            stringArray.add(line.trim().split("\\s+\\s+\\s|\\s|\t"));
         }
         br.close();
     }
@@ -77,8 +81,11 @@ class Graph {
     private Vertex[] vertices;
     private LinkedList<Integer> finishStack;
     private HashSet<Integer> visited;
+    //Strongly connected components
+    private ArrayList<LinkedList<Integer>> stronglyCC;
 
     public Graph(int totalNodes) {
+        stronglyCC = new ArrayList<>();
         vertices = new Vertex[totalNodes];
         finishStack = new LinkedList<>();
         visited = new HashSet<>();
@@ -87,8 +94,9 @@ class Graph {
         }
     }
 
-    public void DFS(int vertexValue) {
-        Vertex v = vertices[vertexValue-1];
+    public void DFS(int vertexValue) throws StackOverflowError{
+        if (visited.contains(vertexValue)) return;
+        Vertex v = vertices[vertexValue];
         visited.add(vertexValue);
         for (int vertex : v.getAdjacentVertex()
         ) {
@@ -100,12 +108,45 @@ class Graph {
         finishStack.offerFirst(vertexValue);
     }
 
-    public HashSet<Integer> getVisited() {
-        return visited;
+    public void stronglyConnectedComponents() {
+        //Step 1. DFS on normal graph
+        int l = getLength();
+        int i = 0;
+        while(getVisitedSize() < l) {
+            DFS(i);
+            i++;
+        }
+        //Step 2. reverse graph and clear visited
+
+        Graph reversed = this.reversedGraph();
+
+        //Step 3. DSF on reversed graph
+
+        while(reversed.getVisitedSize() < l) {
+            reversed.DFS(finishStack.pop());
+            if(!reversed.getFinishStack().isEmpty()) {
+                stronglyCC.add(reversed.getFinishStack());
+                reversed.clearFinishStack();
+            }
+        }
+        clearFinishStack();
+    }
+
+    public ArrayList<LinkedList<Integer>> getStronglyCC() {
+        return stronglyCC;
+    }
+
+    public int getVisitedSize() {
+        return visited.size();
     }
 
     public LinkedList<Integer> getFinishStack() {
-        return finishStack;
+        LinkedList<Integer> copy = (LinkedList<Integer>) this.finishStack.clone();
+        return copy;
+    }
+
+    public void clearFinishStack() {
+        this.finishStack.clear();
     }
 
     public Graph reversedGraph() {
