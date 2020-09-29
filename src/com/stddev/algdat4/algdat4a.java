@@ -1,4 +1,4 @@
-package com.stddev;
+package com.stddev.algdat4;
 
 import java.io.*;
 import java.util.ArrayList;

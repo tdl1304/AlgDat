@@ -1,4 +1,4 @@
-package com.stddev;
+package com.stddev.algdat2;
 
 import java.util.Arrays;
 import java.util.Date;

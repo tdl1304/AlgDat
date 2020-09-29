@@ -1,4 +1,4 @@
-package com.stddev;
+package com.stddev.algdat3;
 
 import java.util.Iterator;
 import java.util.LinkedList;

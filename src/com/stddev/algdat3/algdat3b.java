@@ -1,4 +1,4 @@
-package com.stddev;
+package com.stddev.algdat3;
 
 public class algdat3b {
     public static void main(String[] args) {

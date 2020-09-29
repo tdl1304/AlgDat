@@ -1,4 +1,4 @@
-package com.stddev;
+package com.stddev.algdat1;
 import java.util.Date;
 
 public class algdat1 {
