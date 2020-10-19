@@ -6,7 +6,7 @@ import java.util.*;
 
 public class algdat6 {
     public static void main(String[] args) throws IOException {
-        String path = "PATH";
+        String path = "graphs/vg4.txt";
         Date end;
         Date start = new Date();
         double time;
@@ -56,12 +56,15 @@ public class algdat6 {
         // from the source node
 
 
+
         int dist[] = dpq.getDist();
         Map<Integer,Integer> prevNode = dpq.getPrevNode();
         System.out.println("The shorted path from node :");
         for (int i = 0; i < dist.length; i++)
             System.out.println(source + " to " + i + " is "
                     + dist[i] + ", previous node was " + prevNode.get(i));
+
+
     }
 }
 

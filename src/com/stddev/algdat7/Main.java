@@ -1,18 +1,25 @@
 package com.stddev.algdat7;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.BitSet;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
-        String path = "graphs/test.txt";
+    public static void main(String[] args) throws Exception {
+        String path = "graphs/diverse.txt";
         Huffman hm = new Huffman(path);
+        hm.encode();
+        //test();
+    }
 
-
-
-        System.out.println(hm.toString());
+    public static void test() throws IOException {
+        TextFileHandler fl = new TextFileHandler("graphs/diverse.txt");
+        char[] ch = fl.getCharacters();
+        int max = 0;
+        for (char c: ch
+        ) {
+            if(c>max) max = c;
+        }
+        System.out.println(max);
+        System.out.println((char)max);
     }
 
 
