@@ -1,13 +1,13 @@
 package com.stddev.algdat7;
 
 import java.io.*;
-import java.util.BitSet;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
 public class Huffman {
     private TextFileHandler textFileHandler;
-    String path;
+    private String input;
+    private String output;
     //store all chars in
     private char[] data;
     //index is equal to unicode value, and its data is equal to frequency
@@ -19,9 +19,10 @@ public class Huffman {
     private String[] dictTable;
     private final int size = 65533;
 
-    public Huffman(String path) throws Exception {
-        this.path = path;
-        textFileHandler = new TextFileHandler(path);
+    public Huffman(String input, String output) throws Exception {
+        this.output = output;
+        this.input = input;
+        textFileHandler = new TextFileHandler(this.input);
         data = textFileHandler.getCharacters();
         if (data.length == 0 || data == null) throw new NullPointerException("File is empty");
         freqTable = new int[size];
@@ -29,6 +30,7 @@ public class Huffman {
         dict = "";
         encodedMessage = "";
         dictTable = new String[size];
+        dictTable[0] = "s";
     }
 
     public String getDict() {
@@ -36,25 +38,35 @@ public class Huffman {
     }
 
     private void writeToFile() throws IOException {
-        DataOutputStream out = new DataOutputStream(new FileOutputStream("graphs/compressedFile.txt"));
+        DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(output)));
         out.writeUTF(dict);
-        String temp;
+        String sTemp = null;
+        String subTemp = null;
         for (char c : data
         ) {
-            temp = dictTable[c];
-            while (true) {
-                if (temp.length() > 10) {
-                    out.writeByte(Integer.parseInt(temp.substring(0, 9))/8);
-                    temp = temp.substring(9);
-                } else {
-                    out.writeByte(Integer.parseInt(temp)/8);
-                    break;
-                }
-            }
-
+            encodedMessage += dictTable[c];
         }
-
+        sTemp = encodedMessage;
+        while(sTemp.length() > 30) {
+            subTemp = "1"+sTemp.substring(0,30);
+            sTemp = sTemp.substring(31);
+            out.writeInt(stringToInt(subTemp));
+        }
+        out.writeInt(stringToInt("1"+subTemp)); //Write out last part that is excess
         out.close();
+    }
+
+
+    public int stringToInt(String s) {
+        char[] chars = s.toCharArray();
+        int ret = 1;
+        for (int i = 0; i < chars.length; i++) {
+            ret <<= 1;
+            if(chars[i]=='1') {
+                ret +=1;
+            }
+        }
+        return ret;
     }
 
     public String getEncodedMessage() {
@@ -62,6 +74,8 @@ public class Huffman {
     }
 
     public void encode() throws IOException {
+        encodedMessage = "";
+        dict = "";
         createFreqTable();
         createHuffmanTree();
         createHMDict(root, dict);

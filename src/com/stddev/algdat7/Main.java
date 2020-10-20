@@ -5,9 +5,10 @@ import java.io.IOException;
 public class Main {
     public static void main(String[] args) throws Exception {
         String path = "graphs/diverse.txt";
-        Huffman hm = new Huffman(path);
+        String output = "graphs/compressedFile.txt";
+        Huffman hm = new Huffman(path, output);
         hm.encode();
-        //test();
+        System.out.println(Integer.MAX_VALUE);
     }
 
     public static void test() throws IOException {
