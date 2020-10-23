@@ -1,4 +1,4 @@
-package com.stddev.algdat7;
+package com.stddev.algdat7.compressor;
 
 public class Node implements Comparable<Node> {
     int num;

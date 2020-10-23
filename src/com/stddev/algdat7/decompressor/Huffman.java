@@ -1,25 +1,49 @@
 package com.stddev.algdat7.decompressor;
 
-//TO FIX BINARY STRING
+
 import java.io.*;
 import java.util.ArrayList;
 
 public class Huffman {
-    String input = "";
-    Node root;
-    String[] dict;
-    ArrayList<Integer> encodedMessage;
-    String decompressedData = "";
-    String binaryString = "";
+    private String input = "";
+    private String output = "";
+    private Node root;
+    private String[] dict;
+    private ArrayList<Integer> encodedMessage;
+    private String decompressedData = "";
+    private String binaryString = "";
+    private String splitter;
 
-    public Huffman(String input) throws IOException {
+    public Huffman(String input, String output) throws IOException {
+        splitter = "-7";
         this.input = input;
+        this.output = output;
         encodedMessage = new ArrayList<>();
+
+    }
+
+    //Public wrapper for decompressing
+    public void decompress() throws IOException {
+        resetVariables();
         extractData();
         createHuffmanTree();
         formatBinaryString();
-        decompress();
-        System.out.println(decompressedData);
+        decompressToString();
+        writeToFile(output);
+    }
+
+    private void resetVariables() {
+        root = null;
+        dict = null;
+        encodedMessage.clear();
+        decompressedData = "";
+        binaryString = "";
+    }
+
+    private void writeToFile(String output) throws IOException {
+        DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(output)));
+        out.writeChars(decompressedData);
+        out.close();
     }
 
     private void extractData() throws IOException {
@@ -27,7 +51,7 @@ public class Huffman {
         int data;
         try {
             in = new DataInputStream(new BufferedInputStream(new FileInputStream(input)));
-            dict = in.readUTF().split("\t");
+            dict = in.readUTF().split(splitter);
             while (true) {
                 data = in.readInt();
                 encodedMessage.add(data);
@@ -52,7 +76,7 @@ public class Huffman {
             return false;
         }
         if (root.left == null && root.right == null) {
-            decompressedData += "" + root.c;
+            decompressedData +=root.c;
             this.binaryString = binaryString;
             return true;
         }
@@ -66,7 +90,7 @@ public class Huffman {
 
 
     //wrapper for findAllChars
-    private void decompress() {
+    private void decompressToString() {
         while(findAllChars(root, binaryString)) {
         }
     }

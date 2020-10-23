@@ -1,6 +1,7 @@
-package com.stddev.algdat7;
+package com.stddev.algdat7.compressor;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -9,72 +10,32 @@ public class Huffman {
     private String input;
     private String output;
     //store all chars in
-    private char[] data;
+    private ArrayList<Character> data;
     //index is equal to unicode value, and its data is equal to frequency
     private int[] freqTable;
     private Queue<Node> pq;
     private Node root;
     private String dict;
-    private String encodedMessage;
+    private StringBuilder encodedMessage;
     private String[] dictTable;
     private final int size = 65534;
+    private String splitter;
 
     public Huffman(String input, String output) throws Exception {
+        splitter = "-7";
         this.output = output;
         this.input = input;
         textFileHandler = new TextFileHandler(this.input);
         data = textFileHandler.getCharacters();
-        if (data.length == 0 || data == null) throw new NullPointerException("File is empty");
+        if (data.size() == 0 || data == null) throw new NullPointerException("File is empty");
         freqTable = new int[size];
         pq = new PriorityQueue<>();
         dict = "";
-        encodedMessage = "";
         dictTable = new String[size];
-        dictTable[0] = "s";
-    }
-
-    public String getDict() {
-        return dict;
-    }
-
-    private void writeToFile() throws IOException {
-        DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(output)));
-        out.writeUTF(dict);
-        String sTemp = null;
-        String subTemp = null;
-        for (char c : data
-        ) {
-            encodedMessage += dictTable[c];
-        }
-        sTemp = encodedMessage;
-        while(sTemp.length() > 31) {
-            subTemp = "1"+sTemp.substring(0,31);
-            sTemp = sTemp.substring(32);
-            out.writeInt(stringToInt(subTemp));
-        }
-        out.writeInt(stringToInt(subTemp)); //Write out last part that is excess
-        out.close();
-    }
-
-
-    public int stringToInt(String s) {
-        char[] chars = s.toCharArray();
-        int ret = 1;
-        for (int i = 0; i < chars.length; i++) {
-            ret <<= 1;
-            if(chars[i]=='1') {
-                ret +=1;
-            }
-        }
-        return ret;
-    }
-
-    public String getEncodedMessage() {
-        return encodedMessage;
     }
 
     public void encode() throws IOException {
-        encodedMessage = "";
+        encodedMessage = new StringBuilder();
         dict = "";
         createFreqTable();
         createHuffmanTree();
@@ -83,11 +44,39 @@ public class Huffman {
         writeToFile();
     }
 
-    private void fillDictTable() {
-        String[] temp = dict.split("\t");
-        for (String s : temp
+
+    private void writeToFile() throws IOException {
+        DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(output)));
+        out.writeUTF(dict);
+
+        for (char c : data
         ) {
-            dictTable[s.charAt(s.length()-1)] = s.substring(0, s.length() - 1);
+            encodedMessage.append(dictTable[c]);
+        }
+
+        while(encodedMessage.length() > 31) {
+            out.writeInt(Integer.parseInt("1"+encodedMessage.substring(0,30), 2));
+            encodedMessage.delete(0,30);
+        }
+        out.writeInt(Integer.parseInt("1"+encodedMessage.toString(), 2)); //Write out last part that is excess
+        out.close();
+    }
+
+
+
+
+    private void fillDictTable() {
+        String fail = "";
+        try {
+            String[] temp = dict.split(splitter);
+            for (String s : temp
+            ) {
+                if(s.equals("")) continue;
+                dictTable[s.charAt(s.length() - 1)] = s.substring(0, s.length() - 1);
+            }
+        } catch (Exception e) {
+            System.out.println(fail);
+            System.out.println(e.getLocalizedMessage());
         }
     }
 
@@ -101,7 +90,8 @@ public class Huffman {
     //assigns a dictionary to string: dict
     private void createHMDict(Node root, String s) {
         if (root.left == null && root.right == null) {
-            dict += s + root.c + "\t";
+            char c = root.c;
+            dict += s + root.c + splitter;
             return;
         }
         createHMDict(root.left, s + "0");
