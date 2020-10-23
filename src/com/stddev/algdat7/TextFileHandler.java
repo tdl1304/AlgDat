@@ -6,7 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-class TextFileHandler {
+public class TextFileHandler {
     private File file;
     private char[] characters;
 
@@ -25,9 +25,9 @@ class TextFileHandler {
         String buffer = "";
         String line;
         while ((line = br.readLine()) != null) {
-            buffer += line;
-
+            buffer += line+'\n';
         }
+        buffer = buffer.substring(0, buffer.length()-1);
         characters = buffer.toCharArray();
         br.close();
     }

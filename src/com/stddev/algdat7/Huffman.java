@@ -17,7 +17,7 @@ public class Huffman {
     private String dict;
     private String encodedMessage;
     private String[] dictTable;
-    private final int size = 65533;
+    private final int size = 65534;
 
     public Huffman(String input, String output) throws Exception {
         this.output = output;
@@ -47,12 +47,12 @@ public class Huffman {
             encodedMessage += dictTable[c];
         }
         sTemp = encodedMessage;
-        while(sTemp.length() > 30) {
-            subTemp = "1"+sTemp.substring(0,30);
-            sTemp = sTemp.substring(31);
+        while(sTemp.length() > 31) {
+            subTemp = "1"+sTemp.substring(0,31);
+            sTemp = sTemp.substring(32);
             out.writeInt(stringToInt(subTemp));
         }
-        out.writeInt(stringToInt("1"+subTemp)); //Write out last part that is excess
+        out.writeInt(stringToInt(subTemp)); //Write out last part that is excess
         out.close();
     }
 
@@ -84,10 +84,10 @@ public class Huffman {
     }
 
     private void fillDictTable() {
-        String[] temp = dict.split("\n");
+        String[] temp = dict.split("\t");
         for (String s : temp
         ) {
-            dictTable[s.charAt(s.length() - 1)] = s.substring(0, s.length() - 1);
+            dictTable[s.charAt(s.length()-1)] = s.substring(0, s.length() - 1);
         }
     }
 
@@ -101,7 +101,7 @@ public class Huffman {
     //assigns a dictionary to string: dict
     private void createHMDict(Node root, String s) {
         if (root.left == null && root.right == null) {
-            dict += s + root.c + "\n";
+            dict += s + root.c + "\t";
             return;
         }
         createHMDict(root.left, s + "0");
@@ -114,6 +114,7 @@ public class Huffman {
         for (int i = 0; i < freqTable.length; i++) {
             if (freqTable[i] != 0) pq.add(new Node(freqTable[i], (char) i));
         }
+
         //Huffman tree creation
         while (pq.size() > 1) {
             Node x = pq.poll();

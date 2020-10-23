@@ -8,12 +8,12 @@ public class algdat3b {
     }
 }
 
-class Node1 {
+class Node {
     String word;
-    Node1 left;
-    Node1 right;
+    Node left;
+    Node right;
 
-    Node1(String word) {
+    Node(String word) {
         this.word = word;
         right = null;
         left = null;
@@ -28,7 +28,7 @@ class Node1 {
 //  Starting with the root as the first word
 class BinaryTree {
     static final int COUNT = 10;
-    Node1 root;
+    Node root;
 
     //retrieved from geeks for geeks
     public void add(String word) {
@@ -44,9 +44,9 @@ class BinaryTree {
     }
 
     //retrieved from geeks for geeks
-    private Node1 addRecursive(Node1 current, String word) {
+    private Node addRecursive(Node current, String word) {
         if (current == null) {
-            return new Node1(word);
+            return new Node(word);
         }
 
         if (word.compareTo(current.word) < 0) {
@@ -64,7 +64,7 @@ class BinaryTree {
     // Function to print binary tree in 2D
     // It does reverse inorder traversal
     // Retrieved from geeks for geeks
-    static void print2DUtil(Node1 root, int space)
+    static void print2DUtil(Node root, int space)
     {
         // Base case
         if (root == null)
@@ -88,7 +88,7 @@ class BinaryTree {
     }
 
     // Wrapper over print2DUtil()
-    static void print2D(Node1 root)
+    static void print2D(Node root)
     {
         // Pass initial space count as 0
         print2DUtil(root, 0);
