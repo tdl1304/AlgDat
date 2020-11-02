@@ -8,7 +8,7 @@ public class Main {
 
         double sampleVariance = sampleVariance(data2);
         double standardDevian = standardDevian(data2);
-        System.out.println(standardDevian);
+        //System.out.println(standardDevian);
     }
 
     public static double[] rangeOf(int from, int to) {
