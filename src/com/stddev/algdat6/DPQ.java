@@ -10,7 +10,7 @@ public class DPQ {
     private MinHeapQueue pq;
     private Map<Integer, Integer> prevNode;
     private int V; // Number of vertices
-    List<List<Node>> adj;
+    List<List<Node>> adj; // [][] index 1 is from, index 2 is to. e.g. [1][2] from 1 to 2
 
     public DPQ(int V) {
         this.V = V;

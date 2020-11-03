@@ -6,7 +6,7 @@ import java.util.*;
 
 public class algdat6 {
     public static void main(String[] args) throws IOException {
-        String path = "graphs/vg4.txt";
+        String path = "graphs/vg2.txt";
         Date end;
         Date start = new Date();
         double time;

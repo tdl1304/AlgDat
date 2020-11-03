@@ -120,7 +120,7 @@ class Graph {
 
         Graph reversed = this.reversedGraph();
 
-        //Step 3. DSF on reversed graph
+        //Step 3. DFS on reversed graph
 
         while(reversed.getVisitedSize() < l) {
             reversed.DFS(finishStack.pop());
