@@ -3,7 +3,7 @@ package FibonacciHeap;
 public class FibonacciHeap {
 
     private Node min; //reference to a min node
-    int n; // amount of nodes
+    private int n; // amount of nodes
     private Node found; //reference to the found node
 
 
@@ -37,49 +37,78 @@ public class FibonacciHeap {
                 child.parent = null;
                 insert(child);
                 child = curr;
-                n--;
             } while (child != firstChild);
         }
         //min-pointer to the next root and delete prev min root;
         minRef.left.right = minRef.right;
         minRef.right.left = minRef.left;
         minRef.child = null;
-        if( minRef == minRef.right) {
+        if (minRef == minRef.right) {
             min = null;
         } else {
-            min = minRef.right;
+            this.min = minRef.right;
             consolidate();
         }
     }
 
+    public void display() {
+        display(min);
+        System.out.println();
+    }
+
+    private void display(Node c) {
+        System.out.print("(");
+        if (c == null) {
+            System.out.print(")");
+            return;
+        } else {
+            Node temp = c;
+            Node child;
+            do {
+                System.out.print(temp.key);
+                child = temp.child;
+                display(child);
+                System.out.print("->");
+                temp = temp.right;
+            } while (temp != c);
+            System.out.print(")");
+        }
+    }
+
+
+    //Issue with uniting roots...
     //fix tree, link roots with same degrees together
     private void consolidate() {
-        int size = log2(n)+1;
+        int size = log2(n) + 10;
         Node[] nodes = new Node[size];
         Node currentNode = min;
         Node prevMin = min;
-        Node check;
-        Node temp;
+        Node check = min;
+        Node temp = null;
+        Node temp2 = null;
         int degree;
         do {
             degree = currentNode.degree;
             temp = currentNode;
             while (nodes[degree] != null) {
-                check = nodes[degree];
-                if (currentNode.key < check.key) temp = linkHeap(temp, check);
-                else temp = linkHeap(check, temp);
+                temp2 = nodes[degree];
+                if (currentNode.key < temp2.key) {
+                    temp = linkHeap(temp, temp2);
+                } else {
+                    temp = linkHeap(temp2, temp);
+                }
+                currentNode = temp;
+                check = temp;
                 nodes[degree] = null;
                 degree++;
             }
             nodes[degree] = temp;
-            currentNode = temp;
             currentNode = currentNode.right;
         } while (currentNode != prevMin);
-        min = null;
+        this.min = null;
         for (int i = 0; i < size; i++) {
             if (nodes[i] != null) {
                 insert(nodes[i]);
-                n--;
             }
         }
     }

@@ -5,11 +5,12 @@ public class Main {
         FibonacciHeap fh = new FibonacciHeap();
         fh.insert(15);
         fh.insert(4);
-        fh.insert(276);
+        fh.insert(700);
+        fh.insert(10);
         fh.insert(45);
         fh.insert(32);
         for (int i = 0; i < 5; i++) {
-            System.out.println(fh.n);
+            fh.display();
             System.out.println(fh.extractMin()+" extracted");
         }
 
