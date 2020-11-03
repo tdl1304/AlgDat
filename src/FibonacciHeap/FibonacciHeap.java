@@ -37,6 +37,7 @@ public class FibonacciHeap {
                 child.parent = null;
                 insert(child);
                 child = curr;
+                n--;
             } while (child != firstChild);
         }
         //min-pointer to the next root and delete prev min root;
@@ -75,15 +76,13 @@ public class FibonacciHeap {
         }
     }
 
-
     //Issue with uniting roots...
     //fix tree, link roots with same degrees together
     private void consolidate() {
-        int size = log2(n) + 10;
+        int size = log2(n) + 1;
         Node[] nodes = new Node[size];
         Node currentNode = min;
         Node prevMin = min;
-        Node check = min;
         Node temp = null;
         Node temp2 = null;
         int degree;
@@ -92,27 +91,36 @@ public class FibonacciHeap {
             temp = currentNode;
             while (nodes[degree] != null) {
                 temp2 = nodes[degree];
+                //Link roots with same degrees together
                 if (currentNode.key < temp2.key) {
                     temp = linkHeap(temp, temp2);
                 } else {
                     temp = linkHeap(temp2, temp);
                 }
+
+                if(temp.key == prevMin.key) {
+                    //retain the same min-key throughout the consolidation
+                    prevMin = temp;
+                } else if(prevMin.parent != null){
+                    //if min-key node was moved to a child
+                    prevMin = prevMin.parent;
+                }
+
                 currentNode = temp;
-                check = temp;
                 nodes[degree] = null;
                 degree++;
             }
             nodes[degree] = temp;
             currentNode = currentNode.right;
-        } while (currentNode != prevMin);
+        } while (currentNode!= prevMin);
         this.min = null;
         for (int i = 0; i < size; i++) {
             if (nodes[i] != null) {
                 insert(nodes[i]);
+                n--;
             }
         }
     }
-
 
     //Root node h1 is always less than h2
     private Node linkHeap(Node h1, Node h2) {
@@ -183,5 +191,52 @@ public class FibonacciHeap {
         found = null;
         find(key, this.min);
         return found;
+    }
+
+    private void decreaseKey(Node node, int val) {
+        if(val > node.key) return; //value did not decrease
+        node.key = val; //decreased value
+        Node parent = node.parent;
+        if(node.parent != null && node.parent.key > val) {
+            //cut node off
+            cut(node, parent);
+            //do a cascade check
+            cascading_cut(parent);
+        }
+        if(val < min.key) min = node;
+    }
+
+    private void cascading_cut(Node node) {
+        Node parent = node.parent;
+        if(parent != null) {
+            if(!node.marked) node.marked = true;
+            else {
+                cut(node, parent);
+                cascading_cut(parent);
+            }
+        }
+    }
+
+    private void cut(Node node, Node parent) {
+        node.right.left = node.left;
+        node.left.right = node.right;
+        parent.degree--;
+        Node rightC = node.right;
+        node.right = null;
+        node.left = null;
+        node.parent = null;
+        node.marked = false;
+        insert(node);
+        parent.child = rightC;
+    }
+
+    public void decreaseKey(int key, int val) {
+        Node decrease= find(key);
+        decreaseKey(decrease, val);
+    }
+
+    public void delete(Node node) {
+        decreaseKey(node, Integer.MIN_VALUE);
+        extractMin();
     }
 }

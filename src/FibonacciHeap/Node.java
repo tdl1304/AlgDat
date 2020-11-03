@@ -19,10 +19,12 @@ public class Node {
         this.key = key;
     }
 
+    public int getKey() {
+        return key;
+    }
+
     @Override
     public String toString() {
-        return "Node{" +
-                "key=" + key +
-                '}';
+        return ""+key;
     }
 }
