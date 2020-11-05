@@ -6,10 +6,12 @@ public class Node {
     Node right;
     Node child;
     int degree;
-    int key;
+    int key; //route time
+    int id; //node id
     boolean marked;
 
-    public Node(int key) {
+    public Node(int key, int id) {
+        this.id = id;
         this.degree = 0;
         this.marked = false;
         this.parent = null;
@@ -19,8 +21,28 @@ public class Node {
         this.key = key;
     }
 
+    public Node(Node parent, Node left, Node right, Node child, int degree, int key, int id, boolean marked) {
+        this.parent = parent;
+        this.left = left;
+        this.right = right;
+        this.child = child;
+        this.degree = degree;
+        this.key = key;
+        this.id = id;
+        this.marked = marked;
+    }
+
+    public int getId() {
+        return id;
+    }
+
     public int getKey() {
         return key;
+    }
+
+
+    public Node clone() {
+        return new Node(parent, left, right, child, degree, key, id, marked);
     }
 
     @Override

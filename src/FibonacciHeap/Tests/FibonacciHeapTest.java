@@ -29,20 +29,21 @@ public class FibonacciHeapTest extends FibonacciHeap {
     }
 
     @Test
-    public void delete() {
+    public void delete() throws CloneNotSupportedException {
         obj.extractMin();
         obj.extractMin();
         Node o = obj.find(10);
         obj.delete(o);
-        assert obj.find(10) == null : "Did not delete correctly";
+        boolean test = obj.find(10) == null;
+        assert test : "Did not delete correctly";
     }
 
     @Test
-    public void decreaseKey() {
+    public void decreaseKey() throws CloneNotSupportedException {
         obj.extractMin();
         obj.extractMin();
         obj.decreaseKey(3, 1);
-        assertEquals(obj.find(1).getKey(), obj.getMin(), "decrease key failed");
+        assertEquals(obj.find(1), obj.getMin(), "decrease key failed");
     }
 
     @Test
@@ -51,7 +52,7 @@ public class FibonacciHeapTest extends FibonacciHeap {
     }
 
     @Test
-    public void extractMinTest() {
+    public void extractMinTest() throws CloneNotSupportedException {
         boolean test = true;
         for (int i = 0; i < 8; i++) {
             if(obj.getMin() != obj.extractMin()) {

@@ -13,17 +13,17 @@ public class FibonacciHeap {
         found = null;
     }
 
-    public int extractMin() {
+    public Node extractMin() throws CloneNotSupportedException {
         Node currentMin = min;
         if (min != null) {
             removeAndInsertChildren();
             this.n--;
-            return currentMin.key;
+            return currentMin;
         }
-        return Integer.MAX_VALUE;
+        return null;
     }
 
-    private void removeAndInsertChildren() {
+    private void removeAndInsertChildren() throws CloneNotSupportedException {
         Node minRef = min; //reference to min
         Node minR = min.right;
         Node minL = min.left;
@@ -53,101 +53,93 @@ public class FibonacciHeap {
     }
 
     public void display() {
-        display(min);
-        System.out.println();
+        StringBuilder sb = new StringBuilder();
+        java.lang.String out = display(min, sb);
+        System.out.println(out);
     }
 
-    private void display(Node c) {
-        System.out.print("(");
+    private java.lang.String display(Node c, StringBuilder sb) {
+        sb.append("(");
         if (c == null) {
-            System.out.print(")");
-            return;
+            sb.append(")");
+            return sb.toString();
         } else {
             Node temp = c;
             Node child;
             do {
-                System.out.print(temp.key);
+                sb.append(temp.key);
                 child = temp.child;
-                display(child);
-                System.out.print("->");
+                display(child, sb);
+                sb.append("->");
                 temp = temp.right;
             } while (temp != c);
-            System.out.print(")");
+            sb.append(")");
         }
+        return sb.toString();
     }
 
     //Issue with uniting roots...
     //fix tree, link roots with same degrees together
-    private void consolidate() {
-        int size = log2(n) + 1;
-        Node[] nodes = new Node[size];
-        Node currentNode = min;
-        Node prevMin = min;
-        Node temp = null;
-        Node temp2 = null;
-        int degree;
-        do {
-            degree = currentNode.degree;
-            temp = currentNode;
-            while (nodes[degree] != null) {
-                temp2 = nodes[degree];
-                //Link roots with same degrees together
-                if (currentNode.key < temp2.key) {
-                    temp = linkHeap(temp, temp2);
-                } else {
-                    temp = linkHeap(temp2, temp);
+    public void consolidate() {
+        double phi = (1 + Math.sqrt(5)) / 2;
+        int size = (int)(Math.log(n)/Math.log(phi));
+        Node[] A = new Node[size+1];
+        for (int i = 0; i <= size; ++i)
+            A[i] = null;
+        Node w = min;
+        if (w != null) {
+            Node check = min;
+            do {
+                Node x = w;
+                int d = x.degree;
+                while (A[d] != null) {
+                    Node y = A[d];
+                    if (x.key > y.key) {
+                        Node temp = x;
+                        x = y;
+                        y = temp;
+                        w = x;
+                    }
+                    linkHeap(y, x);
+                    check = x;
+                    A[d] = null;
+                    d += 1;
                 }
-
-                if(temp.key == prevMin.key) {
-                    //retain the same min-key throughout the consolidation
-                    prevMin = temp;
-                } else if(prevMin.parent != null){
-                    //if min-key node was moved to a child
-                    prevMin = prevMin.parent;
+                A[d] = x;
+                w = w.right;
+            } while (w != null && w != check);
+            this.min = null;
+            for (int i = 0; i <= size; ++i) {
+                if (A[i] != null) {
+                    insert(A[i]);
+                    n--;
                 }
-
-                currentNode = temp;
-                nodes[degree] = null;
-                degree++;
-            }
-            nodes[degree] = temp;
-            currentNode = currentNode.right;
-        } while (currentNode!= prevMin);
-        this.min = null;
-        for (int i = 0; i < size; i++) {
-            if (nodes[i] != null) {
-                insert(nodes[i]);
-                n--;
             }
         }
     }
 
-    //Root node h1 is always less than h2
-    private Node linkHeap(Node h1, Node h2) {
-        h2.left.right = h2.right;
-        h2.right.left = h2.left;
-        if (h1.child == null) {
-            h2.right = h2;
-            h2.left = h2;
+    // Linking operation, x should be less than y
+    private void linkHeap(Node y, Node x) {
+        y.left.right = y.right;
+        y.right.left = y.left;
+        Node p = x.child;
+        if (p == null) {
+            y.right = y;
+            y.left = y;
         } else {
-            h2.right = h1.child;
-            h2.left = h1.child.left;
-            h1.child.left.right = h2;
-            h1.child.left = h2;
+            y.right = p;
+            y.left = p.left;
+            p.left.right = y;
+            p.left = y;
         }
-        h2.parent = h1;
-        h1.child = h2;
-        h1.degree++;
-        h2.marked = false;
-        return h1;
+        y.parent = x;
+        x.child = y;
+        x.degree++;
+        y.marked = false;
     }
 
-    private int log2(int N) {
-        return (int) (Math.log(N) / Math.log(2));
-    }
-
-    public int getMin() {
-        return min.key;
+    public Node getMin() {
+        return min;
     }
 
     private void insert(Node n) {
@@ -167,8 +159,8 @@ public class FibonacciHeap {
         this.n++;
     }
 
-    public void insert(int key) {
-        insert(new Node(key));
+    public void insert(int key, int id) {
+        insert(new Node(key, id));
     }
 
     private void find(int key, Node node) {
@@ -194,22 +186,22 @@ public class FibonacciHeap {
     }
 
     private void decreaseKey(Node node, int val) {
-        if(val > node.key) return; //value did not decrease
+        if (val > node.key) return; //value did not decrease
         node.key = val; //decreased value
         Node parent = node.parent;
-        if(node.parent != null && node.parent.key > val) {
+        if (node.parent != null && node.parent.key > val) {
             //cut node off
             cut(node, parent);
             //do a cascade check
             cascading_cut(parent);
         }
-        if(val < min.key) min = node;
+        if (val < min.key) min = node;
     }
 
     private void cascading_cut(Node node) {
         Node parent = node.parent;
-        if(parent != null) {
-            if(!node.marked) node.marked = true;
+        if (parent != null) {
+            if (!node.marked) node.marked = true;
             else {
                 cut(node, parent);
                 cascading_cut(parent);
@@ -231,12 +223,22 @@ public class FibonacciHeap {
     }
 
     public void decreaseKey(int key, int val) {
-        Node decrease= find(key);
+        Node decrease = find(key);
         decreaseKey(decrease, val);
     }
 
-    public void delete(Node node) {
+    public void delete(Node node) throws CloneNotSupportedException {
         decreaseKey(node, Integer.MIN_VALUE);
         extractMin();
+    }
+
+    public void insert(int key) {
+        insert(new Node(key, 0));
+    }
+
+    @Override
+    public String toString() {
+        java.lang.String output = display(min, new StringBuilder());
+        return output;
     }
 }

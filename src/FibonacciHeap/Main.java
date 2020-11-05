@@ -5,7 +5,7 @@ import org.junit.internal.TextListener;
 import org.junit.runner.JUnitCore;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws CloneNotSupportedException {
         runTest();
         FibonacciHeap fh = new FibonacciHeap();
         fh.insert(15);
