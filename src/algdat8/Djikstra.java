@@ -13,8 +13,10 @@ public class Djikstra {
     private ArrayList<Integer> stations;
     private int goal;
     private int src;
+    private HashMap<Integer, Integer> trackNodes;
 
     public Djikstra(int V, List<List<Node>> adj, Node[] nodes) {
+        trackNodes = new HashMap<>();
         route = new LinkedList<>();
         this.nodes = nodes;
         this.V = V;
@@ -30,7 +32,7 @@ public class Djikstra {
 
     public String getRoute() {
         int temp = goal;
-        while(temp != src) {
+        while (temp != src) {
             route.addLast(temp);
             temp = nodes[temp].cameFrom;
         }
@@ -56,7 +58,7 @@ public class Djikstra {
         return nodesProcessed;
     }
 
-    public void nearestStations(int number, int src, int identifier) {
+    public boolean nearestStations(int number, int src, int identifier) {
         this.src = src;
         route.clear();
         stations.clear();
@@ -70,21 +72,23 @@ public class Djikstra {
         int found;
         int u;
 
-        while (stations.size() < number) {
-            //If indexOutOfBounds exception occurs, there are nodes that can't be reached
-            //Fordi dette er et kart, kan jeg anta at første ruten er den korteste
-            //Da djikstra gjennomfører søk i en sirkel
-             do {
-                // remove the minimum distance node
-                // from the priority queue
-                u = queue.poll().id; //node id
-                e_Neighbours(u, -1);
-                nodesProcessed++;
-            } while (!queue.isEmpty() && queue.peek().kode != identifier);
-            found = queue.peek().id;
-            if(!stations.contains(found)) stations.add(found);
-        }
-        this.goal = stations.get(number-1);
+        do {
+            // remove the minimum distance node
+            // from the priority queue
+            u = queue.poll().id; //node id
+            explore_Neighbours(u);
+            nodesProcessed++;
+            if (nodes[u].kode == identifier) {
+                found = u;
+                if (!stations.contains(found)) {
+                    stations.add(found);
+                    if (stations.size() == 10) {
+                        this.goal = stations.get(number - 1);
+                        return true;
+                    };
+                }
+            }
+        } while (true);
     }
 
     /**
@@ -106,22 +110,22 @@ public class Djikstra {
         // Distance to the source is 0
         dist[src] = 0;
         //If indexOutOfBounds exception occurs, there are nodes that can't be reached
-        //Fordi dette er et kart, kan jeg anta at første ruten er den korteste
-        //Da djikstra gjennomfører søk i en sirkel
 
         try {
             while (true) {
                 // remove the minimum distance node
                 // from the priority queue
                 u = queue.poll().id; //node id
-                e_Neighbours(u, -1);
+                if (u == this.goal) {
+                    return true;
+                }
+                explore_Neighbours(u);
                 nodesProcessed++;
-                if (u == this.goal) return true;
             }
-        } catch(NullPointerException e) {
+        } catch (NullPointerException e) {
+            e.printStackTrace();
             return false;
         }
-
     }
 
     public int[] getDist() {
@@ -138,31 +142,31 @@ public class Djikstra {
 
     // Function to process all the neighbours
     // of the passed node
-    private void e_Neighbours(int u, int kode) {
-        int edgeDistance = -1;
-        int newDistance = -1;
+    private void explore_Neighbours(int u) {
+        int newDistance;
         int node;
 
-        // All the neighbors of u
+        // Check all the neighbors of u
         for (int i = 0; i < adj.get(u).size(); i++) {
-            Node v = adj.get(u).get(i);
-            node = v.id;
+            Node n = adj.get(u).get(i);
+            node = n.id;
 
-            // If current node hasn't already been processed
-            if (!v.found) {
-                v.found = true;
-                edgeDistance = v.kjoretid;
-                newDistance = dist[u] + edgeDistance;
+            if (!trackNodes.containsKey(node)) {
+                newDistance = n.kjoretid + dist[u];
 
-                // If new distance is cheaper in cost
-                if (newDistance < dist[node]) {
-                    dist[node] = newDistance;
+                if(newDistance < dist[node]) {
+                    n.kjoretid = newDistance;
+                    nodes[node].kjoretid = newDistance;
                     nodes[node].cameFrom = u;
+                    dist[node] = newDistance;
                 }
 
-                // Add the current node to the queue
-                queue.add(v);
+                if(!trackNodes.containsKey(node)) {
+                    trackNodes.put(node, node);
+                    queue.add(n);
+                }
             }
         }
+
     }
 }

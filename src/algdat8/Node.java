@@ -9,7 +9,6 @@ public class Node implements Comparable {
     double lengdegrad;
     int kjoretid;
     int fcost;
-    boolean found = false;
     int cameFrom;
 
     public Node(int cameFrom, int fcost, int id, String navn, int kode, double breddegrad, double lengdegrad, int kjoretid) {
@@ -50,7 +49,6 @@ public class Node implements Comparable {
                 ", lengdegrad=" + lengdegrad +
                 ", kjoretid=" + kjoretid +
                 ", fcost=" + fcost +
-                ", found=" + found +
                 '}';
     }
 

@@ -11,8 +11,8 @@ Krav:
 Tidsbruk, antall noder fra køen og plott alt
 X 10 bensinstasjoner nærmest "Trondheim lufthavn", plott på kart med djikstra: 2
 X 10 ladestasjoner nærmest "røros hotell" plott kart med djikstra: 4
-finner en vei med A* og djikstra, plott på kart
-"kårvåg-gjemnes" og "trondheim-helsinki" djik og A*
+Xfinner en vei med A* og djikstra, plott på kart
+X"kårvåg-gjemnes" og "trondheim-helsinki" djik og A*
  */
 public class AstarDriver {
     static String mappe, navnFil, kantFil, nodeFil;
@@ -24,7 +24,6 @@ public class AstarDriver {
         kantFil = "kanter.txt";
         nodeFil = "noder.txt";
 
-
         System.out.println("Filhåndtering:");
         start = new Date();
         FileHandler fh = new FileHandler(mappe, navnFil, nodeFil, kantFil);
@@ -35,8 +34,8 @@ public class AstarDriver {
         Node[] nodes = fh.getNodes();
         int nodeCount = fh.getNodeCount();
         int verticesCount = fh.getVerticesCount();
-        src = Norden.OSLO.getNode();
-        goal = Norden.STOCKHOLM.getNode();
+        src = Norden.TRONDHEIM.getNode();
+        goal = Norden.ROROSHOTELL.getNode();
 
         Astar astar = new Astar(verticesCount, adj, nodes);
         System.out.println("A*");
@@ -54,19 +53,10 @@ public class AstarDriver {
     }
 
     public static String toTime(int hundrethOfAsec) {
-        double hrs = 0;
-        double min = 0;
-
-        if (hundrethOfAsec > 360000) {
-            hrs = hundrethOfAsec / 360000;
-            hundrethOfAsec -= hrs * 360000;
-        }
-        if (hundrethOfAsec > 6000) {
-            min =hundrethOfAsec / 6000;
-            hundrethOfAsec -= min * 6000;
-        }
-        double sec = hundrethOfAsec / 100;
-        return hrs + "h, " + min + "min, " + sec + "seconds";
+        int timer = ((int)hundrethOfAsec/100)/3600;
+        int minutter = (((int)hundrethOfAsec/100)/60)-timer*60;
+        int sekunder = ((int)hundrethOfAsec/100)-timer*3600-minutter*60;
+        return timer + "h, " + minutter + "min, " + sekunder + "seconds";
     }
 
     public static void writeTo(String filename, String data) throws IOException {

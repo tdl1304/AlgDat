@@ -12,8 +12,10 @@ public class Astar {
     private LinkedList<Integer> route;
     private int[] dist;
     private Node src;
+    private HashMap<Integer, Integer> trackNodes;
 
     public Astar(int V, List<List<Node>> adj, Node[] nodes) {
+        trackNodes = new HashMap<>();
         dist = new int[nodes.length];
         queue = new PriorityQueue<>();
         route = new LinkedList<>();
@@ -35,9 +37,11 @@ public class Astar {
         try {
             while (true) {
                 u = queue.poll().id;
+                if (u == goal) {
+                    return true;
+                }
                 explore_Neighbours(u);
                 nodesProcessed++;
-                if (u == goal) return true;
             }
         } catch (NullPointerException e) {
             return false;
@@ -92,20 +96,23 @@ public class Astar {
             Node n = adj.get(u).get(i);
             node = n.id;
 
-            if (!n.found) {
-                n.found = true;
-                gcost = n.kjoretid;
-                newDistance = gcost + dist[u];
+            if (!trackNodes.containsKey(node)) {
+                newDistance = n.kjoretid + dist[u];
 
                 if(newDistance < dist[node]) {
                     hcost = avstand(n, goal);
-                    nodes[n.id].cameFrom = u;
+                    n.kjoretid = newDistance;
+                    nodes[node].kjoretid = newDistance;
+                    nodes[node].cameFrom = u;
                     dist[node] = newDistance;
                     n.fcost = newDistance + hcost;
-
+                    nodes[node].fcost = newDistance + hcost;
                 }
 
-                queue.add(n);
+                if(!trackNodes.containsKey(node)) {
+                    trackNodes.put(node, node);
+                    queue.add(n);
+                }
             }
         }
 

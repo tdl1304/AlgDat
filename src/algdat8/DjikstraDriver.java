@@ -11,8 +11,8 @@ Krav:
 Tidsbruk, antall noder fra køen og plott alt
 X 10 bensinstasjoner nærmest "Trondheim lufthavn", plott på kart med djikstra: 2
 X 10 ladestasjoner nærmest "røros hotell" plott kart med djikstra: 4
-finner en vei med A* og djikstra, plott på kart
-"kårvåg-gjemnes" og "trondheim-helsinki" djik og A*
+Xfinner en vei med A* og djikstra, plott på kart
+X"kårvåg-gjemnes" og "trondheim-helsinki" djik og A*
  */
 public class DjikstraDriver {
     static String mappe, navnFil, kantFil, nodeFil;
@@ -39,7 +39,7 @@ public class DjikstraDriver {
         int nodeCount = fh.getNodeCount();
         int verticesCount = fh.getVerticesCount();
         src = Norden.TRONDHEIM.getNode();
-        goal = Norden.HELSINKI.getNode();
+        goal = Norden.ROROSHOTELL.getNode();
 
         djik = new Djikstra(verticesCount, adj, nodes);
         System.out.println("Djikstra");
@@ -53,44 +53,14 @@ public class DjikstraDriver {
         }
         System.out.println(end.getTime() - start.getTime() + " ms");
         System.out.println(djik.getNodesProcessed() + " processed\n");
-        //stasjonTest();
 
-    }
-
-    public static void stasjonTest() {
-        System.out.println("Bensinstasjoner rundt Trondheim lufthavn:");
-        src = Norden.TRONDHEIMLUFTHAVN.getNode();
-        start = new Date();
-        djik.nearestStations(10, src, 2);
-        end = new Date();
-        System.out.println(end.getTime()-start.getTime() + " ms");
-        System.out.println(djik.getNodesProcessed() + " processed");
-        System.out.println(djik.getStations()+"\n");
-
-        System.out.println("Ladestasjoner rundt Røros hotell:");
-        src = Norden.ROROSHOTELL.getNode();
-        start = new Date();
-        djik.nearestStations(10, src, 4);
-        end = new Date();
-        System.out.println(end.getTime()-start.getTime() + " ms");
-        System.out.println(djik.getNodesProcessed() + " processed");
-        System.out.println(djik.getStations()+"\n");
     }
 
     public static String toTime(int hundrethOfAsec) {
-        double hrs = 0;
-        double min = 0;
-
-        if (hundrethOfAsec > 360000) {
-            hrs = hundrethOfAsec / 360000;
-            hundrethOfAsec -= hrs * 360000;
-        }
-        if (hundrethOfAsec > 6000) {
-            min =hundrethOfAsec / 6000;
-            hundrethOfAsec -= min * 6000;
-        }
-        double sec = hundrethOfAsec / 100;
-        return hrs + "h, " + min + "min, " + sec + "seconds";
+        int timer = ((int)hundrethOfAsec/100)/3600;
+        int minutter = (((int)hundrethOfAsec/100)/60)-timer*60;
+        int sekunder = ((int)hundrethOfAsec/100)-timer*3600-minutter*60;
+        return timer + "h, " + minutter + "min, " + sekunder + "seconds";
     }
 
     public static void writeTo(String filename, String data) throws IOException {
