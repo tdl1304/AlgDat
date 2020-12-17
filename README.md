@@ -1,5 +1,5 @@
 # AlgDat
-*Obligatoriske øvinger fra Algoritmer og datastrukturer Høst 2020*\
+*Obligatoriske øvinger fra Algoritmer og datastrukturer Høst 2020*
 ###### TODOS
 <ul>
   <li>En del små feil å rette opp i øving 8 (*prioritetskø*)</li>
